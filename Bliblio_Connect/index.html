@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioConnect | Gestão de Acervo e Empréstimos</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        biblio: {
+                            primary: '#5B1E31', // Bordô BiblioConnect
+                            secondary: '#8A5264', // Vinho claro
+                            accent: '#D6A84F', // Dourado
+                            dark: '#32131E',
+                            light: '#F7F1E9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="h-full bg-slate-50 text-slate-800 flex flex-col justify-between antialiased">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <header class="bg-biblio-primary text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('home')">
+                <div class="bg-biblio-accent text-biblio-dark font-bold text-xl w-12 h-12 rounded-xl flex items-center justify-center shadow-inner">
+                    <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl tracking-tight leading-tight">BiblioConnect</h1>
+                    <p class="text-xs text-sky-200">Sistema Integrado de Gestão e Acervo</p>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                <button onclick="router.navigate('home')" class="hover:text-biblio-accent transition"><i class="fa-solid fa-house mr-1"></i> Início</button>
+                <button onclick="router.navigate('catalog')" class="hover:text-biblio-accent transition"><i class="fa-solid fa-book-open mr-1"></i> Catálogo</button>
+                <button onclick="router.navigate('contacts')" class="hover:text-biblio-accent transition"><i class="fa-solid fa-address-book mr-1"></i> Contatos</button>
+                <button onclick="router.navigate('contacts')" class="hover:text-biblio-accent transition"><i class="fa-solid fa-building-columns mr-1"></i> Unidades</button>
+                <div id="nav-auth-container" class="flex items-center space-x-3 pl-4 border-l border-blue-900">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center">
+                <button onclick="toggleMobileMenu()" class="text-white hover:text-biblio-accent focus:outline-none p-2">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[#401322] border-t border-[#401322] px-4 pt-2 pb-4 space-y-2">
+            <button onclick="router.navigate('home'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-[#401322]"><i class="fa-solid fa-house mr-2"></i> Início</button>
+            <button onclick="router.navigate('catalog'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-[#401322]"><i class="fa-solid fa-book-open mr-2"></i> Catálogo</button>
+            <button onclick="router.navigate('contacts'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-[#401322]"><i class="fa-solid fa-address-book mr-2"></i> Contatos</button>
+            <button onclick="router.navigate('contacts'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-[#401322]"><i class="fa-solid fa-building-columns mr-2"></i> Unidades</button>
+            <div id="mobile-nav-auth" class="pt-2 border-t border-blue-800">
+                <!-- Mobile auth buttons -->
+            </div>
+        </div>
+    </header>
+
+    <div id="global-back-control" hidden class="ec-global-back-wrap"><button type="button" class="ec-back-button" onclick="router.back()"><i class="fa-solid fa-arrow-left mr-2"></i>Voltar</button></div>
+
+    <main id="app-content" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 fade-in">
+        <!-- Dynamic views will be injected here -->
+    </main>
+
+    <footer class="bg-slate-900 text-slate-300 border-t border-slate-800 mt-auto">
+        <div class="bc-footer-grid max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 grid grid-cols-1 md:grid-cols-4 gap-5">
+            <div class="space-y-3">
+                <div class="flex items-center space-x-2">
+                    <div class="bg-biblio-accent text-slate-900 font-bold w-8 h-8 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <span class="font-bold text-white text-lg">BiblioConnect</span>
+                </div>
+                <p class="text-xs text-slate-400">Sistema integrado de excelência acadêmica para gestão de acervos bibliográficos, empréstimos, reservas e atendimento à comunidade.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-3 uppercase tracking-wider">Links Rápidos</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><button onclick="router.navigate('home')" class="hover:text-biblio-accent transition">Página Inicial</button></li>
+                    <li><button onclick="router.navigate('catalog')" class="hover:text-biblio-accent transition">Consultar Acervo</button></li>
+                    <li><button onclick="router.navigate('contacts')" class="hover:text-biblio-accent transition">Fale Conosco & Unidades</button></li>
+                    <li><button onclick="openLoginModal()" class="hover:text-biblio-accent transition">Área Restrita / Login</button></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-3 uppercase tracking-wider">Canais Oficiais</h4>
+                <div class="flex space-x-3 mb-4">
+                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-white hover:bg-pink-600 transition" aria-label="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/5587999999999" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-white hover:bg-green-600 transition" aria-label="WhatsApp da Biblioteca">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                </div>
+                <p class="text-xs text-slate-400">Atendimento: Segunda a Sexta, das 07:30 às 22:00.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-3 uppercase tracking-wider">Demonstração & Segurança</h4>
+                <p class="text-xs text-slate-400 mb-3">Ambiente acadêmico prototipado com simulação completa de banco de dados local, papéis de acesso (Aluno, Professor, Bibliotecário) e regras de negócio rigorosas.</p>
+                <div class="inline-block bg-slate-800 text-amber-400 text-[11px] px-2.5 py-1 rounded border border-slate-700 font-mono">
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Versão 2.6 - Produção Acadêmica
+                </div>
+            </div>
+        </div>
+        <div class="bc-footer-bottom bg-slate-950 py-2 text-center text-xs text-slate-500 border-t border-slate-900">
+            &copy; 2026 Centro Universitário. Todos os direitos reservados. Desenvolvido para Gestão de Bibliotecas.
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative fade-in">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            <div class="text-center mb-6">
+                <div class="inline-flex bg-biblio-primary text-white w-12 h-12 rounded-xl items-center justify-center mb-2 shadow">
+                    <i class="fa-solid fa-right-to-bracket text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">Acessar Sistema</h3>
+                <p class="text-xs text-slate-500">Entre com seu e-mail institucional ou CPF</p>
+            </div>
+            
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">E-mail ou CPF</label>
+                    <input type="text" id="login-email" required placeholder="ex: aluno@edu.br ou CPF" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Senha</label>
+                    <div class="relative">
+                        <input type="password" id="login-pass" required placeholder="••••••••" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                        <button type="button" onclick="togglePasswordVisibility('login-pass', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    <label class="flex items-center text-slate-600">
+                        <input type="checkbox" class="rounded border-slate-300 text-biblio-primary focus:ring-biblio-primary mr-1.5"> Lembrar de mim
+                    </label>
+                    <a href="#" onclick="openForgotPasswordModal(); return false;" class="text-biblio-secondary hover:underline">Esqueceu a senha?</a>
+                </div>
+                <button type="submit" class="w-full bg-biblio-primary hover:bg-blue-900 text-white font-semibold py-2.5 rounded-lg text-sm shadow transition">Entrar</button>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-500 mb-3">Ainda não possui cadastro?</p>
+                <button onclick="closeLoginModal(); openRegisterModal();" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-lg text-sm transition">Criar Conta Nova</button>
+            </div>
+
+            <!-- Quick Demo Credentials Box -->
+            <div class="mt-4 bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px] text-slate-600">
+                <span class="font-bold text-slate-700 block mb-1"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i> Acesso Rápido para Demonstração:</span>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" onclick="fillDemoLogin('admin@biblioconnect.edu.br', 'admin123')" class="bg-white p-1.5 rounded border border-slate-200 hover:bg-blue-50 text-left">
+                        <span class="font-semibold block text-biblio-primary">Bibliotecário</span> admin@edu.br
+                    </button>
+                    <button type="button" onclick="fillDemoLogin('aluno@biblioconnect.edu.br', 'aluno123')" class="bg-white p-1.5 rounded border border-slate-200 hover:bg-blue-50 text-left">
+                        <span class="font-semibold block text-biblio-primary">Aluno</span> aluno@edu.br
+                    </button>
+                    <button type="button" onclick="fillDemoLogin('professor@biblioconnect.edu.br', 'prof123')" class="bg-white p-1.5 rounded border border-slate-200 hover:bg-blue-50 text-left">
+                        <span class="font-semibold block text-biblio-primary">Professor</span> professor@edu.br
+                    </button>
+                    <button type="button" onclick="fillDemoLogin('publico@biblioconnect.edu.br', 'pub123')" class="bg-white p-1.5 rounded border border-slate-200 hover:bg-blue-50 text-left">
+                        <span class="font-semibold block text-biblio-primary">Público Geral</span> público@edu.br
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto fade-in">
+            <button onclick="closeRegisterModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            <div class="text-center mb-6">
+                <div class="inline-flex bg-biblio-secondary text-white w-12 h-12 rounded-xl items-center justify-center mb-2 shadow">
+                    <i class="fa-solid fa-user-plus text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">Cadastro de Novo Usuário</h3>
+                <p class="text-xs text-slate-500">Preencha os dados institucionais para acesso à biblioteca</p>
+            </div>
+
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nome Completo *</label>
+                    <input type="text" id="reg-name" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">CPF *</label>
+                        <input type="text" id="reg-cpf" required placeholder="000.000.000-00" oninput="maskCPF(this)" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Telefone / WhatsApp *</label>
+                        <input type="text" id="reg-phone" required placeholder="(87) 99999-9999" oninput="maskPhone(this)" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">E-mail Institucional ou Pessoal *</label>
+                    <input type="email" id="reg-email" required placeholder="usuario@biblioconnect.edu.br" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Perfil de Acesso *</label>
+                        <select id="reg-profile" onchange="toggleStudentFields()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                            <option value="Aluno">Aluno</option>
+                            <option value="Professor">Professor</option>
+                            <option value="Publico Geral">Público Geral</option>
+                        </select>
+                    </div>
+                    <div id="reg-course-container">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Curso / Instituição</label>
+                        <input type="text" id="reg-course" placeholder="ex: Direito / BiblioConnect" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Senha *</label>
+                        <input type="password" id="reg-pass" required placeholder="Mínimo 6 caracteres" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Confirmar Senha *</label>
+                        <input type="password" id="reg-pass-confirm" required placeholder="Repita a senha" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-biblio-secondary hover:bg-sky-700 text-white font-semibold py-2.5 rounded-lg text-sm shadow transition mt-2">Concluir Cadastro</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgot-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative fade-in">
+            <button onclick="closeForgotPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            <div class="text-center mb-6">
+                <div class="inline-flex bg-amber-500 text-white w-12 h-12 rounded-xl items-center justify-center mb-2 shadow">
+                    <i class="fa-solid fa-key text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">Recuperação de Senha</h3>
+                <p class="text-xs text-slate-500">Enviaremos instruções para redefinição do seu acesso</p>
+            </div>
+            <form onsubmit="handleForgotPassword(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">E-mail Cadastrado</label>
+                    <input type="email" id="forgot-email" required placeholder="seu.email@biblioconnect.edu.br" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-biblio-primary focus:outline-none">
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-lg text-sm shadow transition">Enviar Instruções</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generic Dynamic Modal Container -->
+    <div id="dynamic-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div id="dynamic-modal-content" class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto fade-in">
+            <!-- Populated via JS -->
+        </div>
+    </div>
+
+    <script>
+(function migrateBiblioConnectStorage(){
+  try {
+    Object.keys(localStorage).filter(k => k.startsWith('biblio_')).forEach(oldKey => {
+      const newKey = oldKey.replace(/^biblio_/, 'biblio_');
+      if (localStorage.getItem(newKey) === null) localStorage.setItem(newKey, localStorage.getItem(oldKey));
+    });
+  } catch (e) { /* storage migration is best-effort; app remains usable */ }
+})();
+</script>
+<!-- Scripts clássicos carregados em ordem para preservar funções globais usadas pela interface. -->
+<script src="js/core/01-dados-e-armazenamento.js" defer></script>
+<script src="js/core/02-navegacao.js" defer></script>
+<script src="js/views/03-interface-e-telas.js" defer></script>
+<script src="js/services/04-regras-de-negocio.js" defer></script>
+</body>
+</html>

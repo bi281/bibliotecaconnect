@@ -1,0 +1,1 @@
+Espaço para extrair futuramente funções exclusivas do painel Administrador. Por enquanto, as funções compartilhadas permanecem em services/04-regras-de-negocio.js para não quebrar dependências.

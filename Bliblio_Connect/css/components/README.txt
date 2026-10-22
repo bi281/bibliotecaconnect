@@ -1,0 +1,1 @@
+Estrutura reservada para estilos de componentes reutilizáveis.

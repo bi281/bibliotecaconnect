@@ -1,0 +1,1 @@
+Espaço para funções exclusivas do painel Aluno. A leitura e catálogo permanecem nos arquivos compartilhados nesta primeira etapa.

@@ -1,0 +1,1 @@
+Espaço para funções exclusivas do painel Bibliotecário.

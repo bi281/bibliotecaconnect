@@ -1,0 +1,1 @@
+Estrutura reservada para estilos específicos por tela após testes visuais.

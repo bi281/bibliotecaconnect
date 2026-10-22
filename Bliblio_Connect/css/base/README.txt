@@ -1,0 +1,1 @@
+Estrutura reservada para futura separação segura de variáveis e estilos globais. O CSS atual permanece em ../styles.css para preservar cascata e visual.
